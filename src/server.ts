@@ -4,7 +4,11 @@ import puppeteer from "puppeteer";
 import * as dotenv from "dotenv";
 dotenv.config();
 
-const url: any = process.env.URL;
+import { GPU, Page } from "./types/interfaces";
+
+const url: any =
+  process.env.URL ||
+  "https://www.solotodo.cl/video_cards?memory_quantity_start=105536&ordering=offer_price_usd&";
 
 const app = express();
 
@@ -12,46 +16,60 @@ app.get("/", (_req, _res) => {
   _res.send("Welcome to my webscraper!");
 });
 
-type GPU = {
-  title: string;
-  img: string;
-  memory: string;
-  coreFrecuency: string;
-  bus: string;
-};
-
 puppeteer
   .launch()
   .then((browser) => browser.newPage())
-  .then((page) => {
-    return page.goto(url).then(function () {
-      return page.content();
-    });
+  .then(async (page) => {
+    await page.goto(url);
+    return await page.content();
   })
   .then((html) => {
     const $ = cheerio.load(html);
-    let gpuArr: GPU[] = [];
-    $(".category-browse-result").each(function (this: GPU) {
-      const img: any = $(this)
-        .find("div > .image-container > a > img")
-        .attr("src");
-      const title: string = $(this)
-        .find(".description-container > dl dd:nth-child(2)")
-        .text();
-      const memory: string = $(this)
-        .find(".description-container > dl dd:nth-child(4)")
-        .text();
-      const coreFrecuency: string = $(this)
-        .find(".description-container > dl dd:nth-child(6)")
-        .text();
-      const bus: string = $(this)
-        .find(".description-container > dl dd:nth-child(8)")
-        .text();
-      const gpu: GPU = { title, img, memory, coreFrecuency, bus };
-      gpuArr.push(gpu);
+    const pagination: Page = { lastPageNumber: 0 };
+    $(".pagination").each(function (this: Page) {
+      const lastPageNumber: number = parseInt(
+        $(this).find(".page-item:nth-last-child(2) > a").text().trim()
+      );
+      pagination.lastPageNumber = lastPageNumber;
     });
-    console.log(gpuArr);
-    console.log(`You have scraped ${gpuArr.length} registries`);
+    return pagination;
+  })
+  .then((pagination) => {
+    for (let i: number = 1; i <= pagination.lastPageNumber; i++) {
+      puppeteer
+        .launch()
+        .then((browser) => browser.newPage())
+        .then(async (page) => {
+          await page.goto(`${url}${i === 1 ? "" : `page=${i}&`}`);
+          return await page.content();
+        })
+        .then((html) => {
+          const $ = cheerio.load(html);
+          const gpuArr: GPU[] = [];
+          $(".category-browse-result").each(function (this: GPU) {
+            const img: any = $(this)
+              .find("div > .image-container > a > img")
+              .attr("src");
+            const title: string = $(this)
+              .find(".description-container > dl dd:nth-child(2)")
+              .text();
+            const memory: string = $(this)
+              .find(".description-container > dl dd:nth-child(4)")
+              .text();
+            const coreFrecuency: string = $(this)
+              .find(".description-container > dl dd:nth-child(6)")
+              .text();
+            const bus: string = $(this)
+              .find(".description-container > dl dd:nth-child(8)")
+              .text();
+            const gpu: GPU = { title, img, memory, coreFrecuency, bus };
+            gpuArr.push(gpu);
+          });
+          console.log(gpuArr);
+          console.log(`You have scraped ${gpuArr.length} registries`);
+        })
+        .catch(console.error);
+    }
   })
   .catch(console.error);
 
