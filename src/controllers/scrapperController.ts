@@ -32,7 +32,9 @@ export const scrapData = async (req: Request, res: Response) => {
     // Scrape the data from each page
     let totalDataScrapred: number = 0;
     await db.connection().catch((error) => {
-      res.status(500).json({ message: "db connection has failded", error });
+      res
+        .status(500)
+        .json({ code: 1, description: "db connection has failded" });
     });
     for (let i: number = 1; i <= pagination.lastPageNumber; i++) {
       // Go to the page
@@ -87,7 +89,12 @@ export const scrapData = async (req: Request, res: Response) => {
         };
         gpuArr.push(gpu);
         gpuModel.create(gpu).catch((error) => {
-          res.status(500).json({ message: "db insertion has failed", error });
+          res
+            .status(500)
+            .json({
+              code: 4,
+              description: "GPU regestry insertion has failed",
+            });
         });
       });
       totalDataScrapred = totalDataScrapred + gpuArr.length;
@@ -95,16 +102,16 @@ export const scrapData = async (req: Request, res: Response) => {
     setTimeout(
       () =>
         db.disconnect().catch((error) => {
-          res.status(408).json({ error });
+          res
+            .status(408)
+            .json({ code: 2, description: "db disconnection has failed" });
         }),
       1500
     );
     res.status(200).json({
-      message: `You have scraped ${totalDataScrapred} registries`,
+      message: `You have scraped ${totalDataScrapred} GPUs registries`,
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Headless browser setup has failed", error });
+    res.status(500).json({ code: 3, description: "Scrapper internal error" });
   }
 };

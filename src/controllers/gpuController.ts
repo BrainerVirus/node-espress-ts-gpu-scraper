@@ -3,26 +3,35 @@ import gpuModel from "../models/gpuSchema.js";
 import { GPU } from "../types/interfaces.js";
 import { Request, Response, NextFunction } from "express";
 
-export const getAllGPU = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const getAllGPU = async (req: Request, res: Response) => {
   try {
-    await db.connection();
+    await db.connection().catch((error) => {
+      res
+        .status(500)
+        .json({ code: 1, description: "db connection has failed" });
+    });
     const gpuList: GPU[] = await gpuModel.find();
-    db.disconnect();
-    res.sendStatus(200).json({ GPUs: gpuList });
+    if (gpuList.length === 0)
+      return res.status(200).json({
+        code: 4,
+        description: "Cannot find any GPUs entries in the db",
+      });
+    setTimeout(
+      () =>
+        db.disconnect().catch((error) => {
+          res
+            .status(408)
+            .json({ code: 2, description: "db disconnection has failed" });
+        }),
+      1500
+    );
+    res.status(200).json({ GPUs: gpuList });
   } catch (error) {
-    res.sendStatus(200).json({ message: error });
+    res.status(500).json({ code: 3, description: "Internal error" });
   }
 };
 
-export const createGPU = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const createGPU = async (req: Request, res: Response) => {
   try {
     const data: GPU = {
       title: req.body.title,
@@ -48,22 +57,30 @@ export const createGPU = async (
       !data.date ||
       !data.time
     )
-      return res.status(200).json({ error: "One or more fields is missing" });
+      return res
+        .status(200)
+        .json({ code: 5, description: "One or more fields is missing" });
     await db.connection().catch((error) => {
-      res.status(500).json({ message: "db connection has failded", error });
+      res
+        .status(500)
+        .json({ code: 1, description: "db connection has failed" });
     });
     const gpu = await gpuModel.create(data).catch((error) => {
-      res.status(500).json({ message: "db insertion has failed", error });
+      res
+        .status(500)
+        .json({ code: 4, description: "GPU regestry insertion has failed" });
     });
     setTimeout(
       () =>
         db.disconnect().catch((error) => {
-          res.status(408).json({ error });
+          res
+            .status(408)
+            .json({ code: 2, description: "db disconnection has failed" });
         }),
       1500
     );
-    res.status(200).json({ message: "GPU insertion succesfull" });
+    res.status(200).json({ message: "GPU regestry insertion succesfull" });
   } catch (error) {
-    res.status(500).json({ message: "gpu insertion has failed", error });
+    res.status(500).json({ code: 3, description: "Internal error" });
   }
 };
