@@ -12,11 +12,6 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "semantic-release": "semantic-release"
   },
-  "husky": {
-    "hooks": {
-      "commit-msg": "npm run lint-commit-msg"
-    }
-  },
   "keywords": [],
   "author": "",
   "license": "ISC",
