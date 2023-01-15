@@ -1,6 +1,6 @@
 {
   "name": "web-scraper",
-  "version": "1.0.0",
+  "version": "0.0.0-development",
   "description": "",
   "main": "server.js",
   "type": "module",
@@ -9,7 +9,8 @@
     "dev": "ts-node-esm src/server.ts",
     "start": "tsc && node build/server.js",
     "tsc": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "semantic-release": "semantic-release"
   },
   "husky": {
     "hooks": {
@@ -37,5 +38,9 @@
     "express": "^4.18.2",
     "mongoose": "^6.8.0",
     "puppeteer": "^19.3.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BrainerVirus/node-espress-ts-gpu-scraper.git"
   }
 }

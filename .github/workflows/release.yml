@@ -1,7 +1,7 @@
 name: Release
 
 on:
-  workflow_dispatch:
+  push:
 
 jobs:
   release:
@@ -16,7 +16,7 @@ jobs:
         with:
           node-version: 18
       - run: npm ci
-      - run: npm run build
+      - run: npm run tsc
       - run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
