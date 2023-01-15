@@ -21,7 +21,7 @@ app.get("/", (_req, _res) => {
 });
 
 app.use("/gpu", routerGPU);
-app.use("/scrapper", routerScrapper);
+app.use( "/scrapper", routerScrapper );
 
 const port: number = 8080;
 
