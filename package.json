@@ -42,11 +42,11 @@
     "branches": [
       "main",
       "next"
-    ],
-    "private": false,
-    "publishConfig": {
-      "access": "public",
-      "registry": "https://npm.pkg.github.com/"
-    }
+    ]
+  },
+  "private": false,
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://npm.pkg.github.com/"
   }
 }
