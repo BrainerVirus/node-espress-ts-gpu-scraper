@@ -40,11 +40,13 @@
   },
   "release": {
     "branches": [
-      "main"
-    ]
-  },
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://npm.pkg.github.com/"
+      "main",
+      "next"
+    ],
+    "private": false,
+    "publishConfig": {
+      "access": "public",
+      "registry": "https://npm.pkg.github.com/"
+    }
   }
 }
