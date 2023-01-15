@@ -1,5 +1,5 @@
 {
-  "name": "web-scraper",
+  "name": "@BrainerVirus/web-scraper",
   "version": "0.0.0-development",
   "description": "",
   "main": "server.js",
@@ -44,7 +44,7 @@
     ]
   },
   "publishConfig": {
-    "access":"public",
+    "access": "public",
     "registry": "https://npm.pkg.github.com/"
   }
 }
