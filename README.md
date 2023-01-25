@@ -56,7 +56,7 @@ Start the server
 
 - Data scrapping
 - Save data retrived
-- Show all the date retrived
+- Show all the data retrived
 - Manual data insertion
 
 
